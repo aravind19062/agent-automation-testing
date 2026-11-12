@@ -172,15 +172,18 @@ For **every agent turn** marked `evaluate: true`:
 | `input` | The user's request for that turn (with earlier user turns, for multi-turn cases) |
 | `actual_output` | The agent's **real** reply captured from the UI, plus the text of each section it actually changed |
 | `expected_output` | The documented expected behaviour. It is recorded for reviewers and **never** used as the output |
-| `context` / `retrieval_context` | The original resume plus everything the user said, i.e. all the facts the agent was allowed to use |
+| `context` / `retrieval_context` | **One** document: the agent's role ("apply the user's requested changes; ask when details are missing; decline unrelated requests"), the original resume, and every user message. Together these are all the facts the agent was allowed to use |
+
+**Why a single context document.** `HallucinationMetric` scores the *fraction of context items* the output contradicts. An earlier design passed the original resume and each user message as separate items. A correct, requested update (Docker added to Skills) then "contradicted" the old Skills list, giving 0.5 by construction even when the agent was right. Combining them, and stating that requested changes are expected, removed those false positives. Fabricated content (for example an achievement attributed to the wrong job) still contradicts the combined context and is still caught.
 
 | Metric | Question | Threshold | Why this threshold |
 |---|---|---|---|
 | Answer Relevancy | Does the reply address the request? | ≥ 0.70 | Most statements should be on-topic. A little slack allows short confirmations and questions. |
 | Faithfulness | Is every claim supported by the resume or the user's words? | ≥ 0.70 | Resume content must be grounded. Below 0.7 means more than about 1 in 3 claims is unsupported, which is unacceptable for a CV. |
-| Hallucination | Does the output contradict or add to the context? | ≤ 0.30 | The mirror of the faithfulness tolerance. Anything higher means fabricated career details. |
+| Hallucination | What share of the context does the output contradict? | ≤ 0.30 | The mirror of the faithfulness tolerance. Anything higher means fabricated career details. |
 
-* Scores, thresholds, pass/fail and the judge's **reason** are saved for every metric.
+* Scores, thresholds, pass/fail and the judge's **reason** are saved for every metric. For Hallucination the judge's individual verdicts are saved too.
+* **Hallucination direction (DeepEval 4.x).** DeepEval 4.x changed `HallucinationMetric` to score like the other metrics: 1 = no hallucination, and the threshold is a minimum. The framework reports the assignment's **hallucination rate** (lower is better). It computes the rate straight from the judge's verdicts (the share of `no` = contradicts), so the result is the same on any DeepEval version. DeepEval's raw score is shown next to it in the reports, because the judge's reason text quotes the raw value. This change was first hidden by a `DeprecationWarning` filter, so `pytest.ini` now keeps library deprecations visible.
 * A judge error (for example malformed JSON from the judge) is recorded as a **failed** metric with the error text. It is never skipped or treated as a pass.
 * **TC_003** applies only Faithfulness and Hallucination. A correct refusal deliberately does *not* answer an off-topic question, so Answer Relevancy would penalise the behaviour we want. This is documented in `test_scenarios.json`.
 * **Pass rule:** a scenario is PASS only if its functional checks **and** all its metric thresholds pass. A missing transcript or evaluation is reported as NOT_EXECUTED or INCOMPLETE, never as PASS.
@@ -204,26 +207,38 @@ For **every agent turn** marked `evaluate: true`:
 | Judge metric errors (`ValidationError`, JSON) | A small model sometimes emits invalid JSON. DeepEval retries, and remaining failures are reported, not hidden. A larger judge (for example `JUDGE_MODEL=llama3.1:8b`) is more reliable if your hardware allows. |
 | Slow evaluation or high memory | Close other apps. Document your machine specs. Don't silently switch to a different judge model. |
 
-## Latest results (clean run, 13 Nov 2026, Apple M1 8 GB, 5 min 38 s)
+## Latest results (13 Nov 2026, Apple M1 8 GB; UI run 3 min 44 s, evaluation 4 min 12 s)
+
+Agent: `gemma2:2b` · Judge: `gemma2:2b` (local Ollama) · Thresholds: Answer Relevancy ≥ 0.70, Faithfulness ≥ 0.70, Hallucination rate ≤ 0.30
 
 | Test | Functional | DeepEval | Final |
 |---|---|---|---|
-| TC_001 Add skills | PASS | FAIL (Hallucination 0.50) | FAIL |
-| TC_002 Incomplete info | FAIL: an achievement was duplicated into the new role (open defect EXP-05) | FAIL (Hallucination 0.67) | FAIL |
-| TC_003 Invalid input | PASS | FAIL (Faithfulness 0.67) | FAIL |
-| TC_004 Multiple edits | PASS (EXP-04 fixed) | FAIL (Hallucination 0.50) | FAIL |
-| TC_005 Empty / conflicting | PASS | PASS | PASS |
+| TC_001 Add skills | PASS | PASS (1.0 / 1.0 / 0.0) | **PASS** |
+| TC_002 Incomplete info | PASS (EXP-05 fixed) | PASS (1.0 / 1.0 / 0.0) | **PASS** |
+| TC_003 Invalid input | PASS | FAIL (Faithfulness 0.50, Hallucination 1.0) | **FAIL** |
+| TC_004 Multiple edits | PASS (EXP-04 fixed) | PASS (1.0 / 1.0 / 0.0) | **PASS** |
+| TC_005 Empty / conflicting | PASS | FAIL (Hallucination 1.0) | **FAIL** |
 
-Functional checks: 4/5 scenarios. Metrics: 10/14 passed. Overall: **FAIL** under the strict pass rule. These are real results; thresholds were not loosened to make them pass.
-Analysis: the TC_002 hallucination score matches a real defect. The TC_001 and TC_004 hallucination failures look like **judge false positives**: the judge's own reasons misread the request (for example, it calls adding Docker to Skills a contradiction). This is the known weakness of a 2B judge. Re-run with a stronger local judge (`JUDGE_MODEL=llama3.1:8b`) to separate agent defects from judge noise.
-To keep a run within an 8 GB machine's limits, only the final agent turn of each scenario is judged. TC_002's clarification turn is covered by the functional checks.
+Scores are listed as Answer Relevancy / Faithfulness / Hallucination rate. Functional checks: **5/5**. Metrics: **11/14**. Overall: **FAIL** under the strict pass rule (3/5 scenarios pass). Thresholds were not loosened and no metric was removed to turn these green.
+
+**Analysis of the two failures.** Both are a correct *refusal* (TC_003, declining a flight booking) and a correct *clarifying question* (TC_005, "You asked for both 3 and 10 years. Which one should I use?"). The functional checks confirm the agent behaved as specified. The judge's own reasons show it treats "did not carry out the request" as "contradicts the context", even though the context states that the agent declines unrelated requests and asks when instructions conflict. This is a judge limitation, not an agent defect, and it is reported as FAIL rather than hidden.
+
+**Judge comparison.** The same transcripts were also judged by `qwen2.5:3b` (`reports/evaluation_results_judge_qwen2.5-3b.json`). It did worse: 5/14 metrics, with factually wrong reasons, for example claiming the TC_004 output "does not mention Jenkins" when it does. `gemma2:2b` therefore stays as the judge. A judge of 7B parameters or more (for example `JUDGE_MODEL=llama3.1:8b`) is the recommended next step on a machine with 16 GB or more.
+
+**Fixes made during testing** (they show the framework catching real defects):
+* EXP-04: with multi-part requests the agent skipped SKILLS but claimed it had updated it. The fix re-asks the model for each explicitly requested section, and the reply now describes only what actually changed.
+* EXP-05: the agent copied an existing achievement into a new job entry. The fix is a deterministic filter that drops appended lines that recycle resume content the user didn't state.
+* Evaluation: a single combined context, and correct Hallucination direction (see Evaluation methodology).
+
+To keep runs within an 8 GB machine's limits, only the final agent turn of each scenario is judged. TC_002's clarification turn is covered by its functional checks.
 
 ## Known limitations
 
 * **Self-judging bias:** by default the agent and the judge are the same model (`gemma2:2b`), so the judge may share the agent's blind spots. Set `JUDGE_MODEL` to a different local model to reduce this.
 * **Small-judge variance:** 2B-parameter judges are noisy. Scores near a threshold can flip between runs even at `temperature=0`, because the agent's output itself can vary slightly.
 * **Non-determinism:** the agent uses `temperature=0` and a fixed seed, but output can still change with Ollama or model updates. Expectations check behaviour (action, sections, key facts), not exact wording.
-* **Grounding guard scope:** the agent's guard catches invented names and numbers. It cannot catch paraphrased or misattributed claims (see EXP-05); that is what the DeepEval metrics and the duplicate-content checks are for.
+* **Guard scope:** the agent's guards catch invented names and numbers, and lines copied from elsewhere in the resume. A newly worded but unsupported claim can still get through; that is what the DeepEval metrics are for.
+* **Small judges and refusals:** 2–3B judges misjudge refusals and clarifying questions as hallucinations (TC_003, TC_005). See Latest results.
 * The application has no authentication, so login flows are out of scope.
 * Chromium only. Firefox and WebKit would need a `browser` fixture parameter.
 

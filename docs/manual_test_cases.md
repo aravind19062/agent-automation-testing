@@ -25,7 +25,7 @@
 | EXP-02 | "Add my new job" (no details) invented "Acme Corp, 2023". Hallucination. | Fixed: the grounding guard now asks for details |
 | EXP-03 | The conflicting-values reply quoted the few-shot example values ("2 and 8") instead of the user's ("3 and 10"). | Fixed: placeholder examples in the prompt |
 | EXP-04 | Multi-edit request: skills placed in SUMMARY; the reply falsely claims SKILLS was updated. | Fixed: the agent detects named sections it skipped, asks the model for each one, and keeps the reply honest. Verified by TC_004 |
-| EXP-05 | Follow-up job details: an existing Northwind achievement was copied into the new Fabrikam role (misattribution). | **Open.** Reproduced by TC_002 step 6 |
+| EXP-05 | Follow-up job details: an existing Northwind achievement was copied into the new Fabrikam role (misattribution). | Fixed: appended lines that recycle existing resume content the user didn't state are dropped. Verified by TC_002 |
 
 ## 2. Test cases
 
@@ -63,8 +63,8 @@ Mandatory template fields: Test ID, Test Case Description, Precondition, Test St
 | **Test Data** | `base_resume`; turn 1: *"Add my new job to my experience section."*; turn 2: *"It is Senior SDET at Fabrikam Inc, started March 2025. I lead the Playwright automation team."* |
 | **Test Steps** | 1. Open the app and paste `base_resume`.<br>2. Send turn 1.<br>3. Verify the badge, the reply and that the resume is unchanged.<br>4. Send turn 2 in the same conversation.<br>5. Inspect **Updated resume** → EXPERIENCE.<br>6. Verify the existing roles are intact and no existing achievement is duplicated into the new role. |
 | **Expected Result** | Turn 1: badge **Needs details**; the reply asks for the missing company, title and dates; the resume is unchanged; no employer is invented. Turn 2: badge **Updated**; EXPERIENCE contains *Senior SDET, Fabrikam Inc, March 2025*; Northwind Labs and Contoso Retail are kept; nothing the user didn't state is added. |
-| **Actual Result** | Turn 1: **Needs details**, reply asks for company, job title and dates; the resume is unchanged. Turn 2: **Updated**; the Fabrikam role is added with "Lead the Playwright automation team", and the old roles are kept. **But** the new role also contains *"Built and maintained Selenium regression suites covering 300+ test cases"*, copied from the Northwind role (EXP-05). |
-| **Status** | Fail |
+| **Actual Result** | Before the fix: turn 2 also added *"Built and maintained Selenium regression suites covering 300+ test cases"* to the Fabrikam role, copied from Northwind (EXP-05). After the fix: Turn 1: **Needs details**, *"I need a few more details before I can make that change…"*; the resume is unchanged. Turn 2: **Updated**, *"Added your new job as Senior SDET at Fabrikam Inc. to Experience."* EXPERIENCE gains `Senior SDET, Fabrikam Inc. (March 2025 - Present)` / `- Lead the Playwright automation team.` only. Northwind and Contoso roles are unchanged and nothing is duplicated. |
+| **Status** | Pass (after the EXP-05 fix) |
 | **Automation Candidate** | Yes |
 | **Automation Priority** | High |
 | **Automated Test** | `tests/test_resume_agent.py::test_tc002_incomplete_information_clarification` |

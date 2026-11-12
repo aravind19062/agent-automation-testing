@@ -185,6 +185,35 @@ def _apply_mode(section: str, old: str, edit: "SectionEdit", message: str) -> st
     return old.rstrip("\n") + joiner + "\n".join(extra)
 
 
+_STOPWORDS = {"and", "the", "for", "with", "from", "into", "that", "this", "your", "my", "our", "are", "was", "have"}
+
+
+def _content_words(text: str) -> set[str]:
+    return {w.lower() for w in re.findall(r"[A-Za-z0-9+#]+", text) if len(w) >= 3 and w.lower() not in _STOPWORDS}
+
+
+def drop_copied_lines(content: str, resume_lines: list[str], user_text: str) -> tuple[str, list[str]]:
+    """Remove appended lines that recycle existing resume content the user did not ask for.
+
+    A line is "copied" when most of its words come from one existing resume line
+    and few come from the user's messages, e.g. an achievement from a previous job
+    pasted into a new job entry (it would misattribute that achievement).
+    """
+    user_words = _content_words(user_text)
+    existing = [_content_words(ln) for ln in resume_lines]
+    kept, dropped = [], []
+    for line in content.split("\n"):
+        words = _content_words(line)
+        if len(words) >= 3:
+            from_resume = max((len(words & e) / len(words) for e in existing), default=0.0)
+            from_user = len(words & user_words) / len(words)
+            if from_resume >= 0.6 and from_user < 0.5:
+                dropped.append(line.strip())
+                continue
+        kept.append(line)
+    return "\n".join(kept).strip("\n"), dropped
+
+
 def check_edit(old: str, new: str, sources: str, message: str) -> str | None:
     """Return a reason string if the edit must be rejected, else None."""
     old_lines, new_lines = _norm_lines(old), _norm_lines(new)
@@ -260,7 +289,8 @@ def run_agent(resume: str, message: str, history: list[dict] | None = None) -> A
 
     sources = resume + "\n" + "\n".join(
         str(t.get("content", "")) for t in (history or []) if t.get("role") == "user") + "\n" + message
-    state = _EditState(sections)
+    user_text = "\n".join(str(t.get("content", "")) for t in (history or []) if t.get("role") == "user") + "\n" + message
+    state = _EditState(sections, user_text)
     problem = state.apply(edits, sources, message)
     if problem:
         return AgentResult(action="clarify", reply=NEEDS_DETAILS_REPLY)
@@ -289,8 +319,10 @@ def run_agent(resume: str, message: str, history: list[dict] | None = None) -> A
 class _EditState:
     """Resume sections being edited, plus which ones actually changed."""
 
-    def __init__(self, sections: list[tuple[str, str]]):
+    def __init__(self, sections: list[tuple[str, str]], user_text: str = ""):
         self.sections = list(sections)
+        self.user_text = user_text
+        self.resume_lines = [ln for _, body in sections for ln in _norm_lines(body)]
         self.index = {name.upper(): i for i, (name, _) in enumerate(self.sections)}
         self.changed: list[str] = []
 
@@ -303,6 +335,13 @@ class _EditState:
         for edit in edits:
             name = edit.section.strip().strip("[]").upper()
             old = self.sections[self.index[name]][1] if name in self.index else ""
+            if name != "SKILLS" and (edit.mode == "append" or not old.strip()):
+                cleaned, dropped = drop_copied_lines(edit.content, self.resume_lines, self.user_text)
+                if dropped:
+                    log.warning("Dropped lines copied from existing resume content into %s: %s", name, dropped)
+                    edit = SectionEdit(section=edit.section, mode=edit.mode, content=cleaned)
+                if not cleaned.strip():
+                    continue
             content = _apply_mode(name, old, edit, message)
             problem = check_edit(old, content, sources, message)
             if problem:

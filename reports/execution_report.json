@@ -1,6 +1,7 @@
 {
-  "report_generated_at": "2026-11-12T22:41:02+00:00",
+  "report_generated_at": "2026-11-12T23:20:59+00:00",
   "pass_rule": "A scenario passes only when its functional checks AND its evaluation thresholds are satisfied.",
+  "hallucination_note": "Hallucination is reported as the share of context the judge says the output contradicts (0 = none, pass if <= threshold). DeepEval 4.x scores the inverse (1 = no hallucination); that raw value is shown alongside, and the judge's reason text refers to it.",
   "environment": {
     "application_url": "http://127.0.0.1:8765",
     "agent_model": {
@@ -32,14 +33,14 @@
   "summary": {
     "total_scenarios": 5,
     "executed": 5,
-    "passed": 1,
-    "failed": 4,
+    "passed": 3,
+    "failed": 2,
     "not_executed_or_incomplete": 0,
-    "functional_passed": 4,
-    "evaluation_passed": 1,
+    "functional_passed": 5,
+    "evaluation_passed": 3,
     "failed_ui_steps": 0,
     "metrics_evaluated": 14,
-    "metrics_passed": 10,
+    "metrics_passed": 11,
     "overall_status": "FAIL"
   },
   "scenarios": [
@@ -49,8 +50,8 @@
       "category": "Positive",
       "priority": "High",
       "functional_status": "PASS",
-      "evaluation_status": "FAIL",
-      "final_status": "FAIL",
+      "evaluation_status": "PASS",
+      "final_status": "PASS",
       "failed_step": null,
       "error": null,
       "failed_ui_steps": [],
@@ -78,7 +79,22 @@
           "passed": true,
           "reason": "The score is 1.00 because the prompt is very specific and the output is focused on Python and Playwright, which is a good start for the user's request.",
           "error": null,
-          "duration_s": 10.9
+          "duration_s": 10.5,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "borderline",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 2,
@@ -89,46 +105,57 @@
           "passed": true,
           "reason": "The faithfulness score is 1.00 because the actual output perfectly aligns with the retrieval context.",
           "error": null,
-          "duration_s": 19.0
+          "duration_s": 21.6,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 2,
           "metric": "hallucination",
-          "score": 0.5,
+          "score": 0.0,
           "threshold": 0.3,
           "comparison": "<=",
-          "passed": false,
-          "reason": "The hallucination score is 0.50 because the actual output partially aligns with the context by adding Python and Playwright to the Skills section, but it fails to fully reflect the user's request to add them to the resume. The context only mentions the addition of these skills to the resume, while the actual output does not explicitly mention the user's request to add them to the resume.",
+          "passed": true,
+          "reason": "The hallucination score is 1.00 because the actual output perfectly aligns with the provided context, confirming the user's requested changes were successfully implemented in the Skills section.",
           "error": null,
-          "duration_s": 14.6
+          "duration_s": 6.0,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": "The actual output agrees with the provided context which states that the user's requested changes were added to the Skills section."
+            }
+          ]
         }
       ],
       "evaluation_notes": null,
       "screenshots": [
-        "screenshots/TC_001_PASS_20261112223533.png"
+        "screenshots/TC_001_PASS_20261112230335.png"
       ],
       "transcript": "transcripts/TC_001.json",
-      "executed_at": "2026-11-12T22:35:33+00:00"
+      "executed_at": "2026-11-12T23:03:35+00:00"
     },
     {
       "test_id": "TC_002",
       "title": "Incomplete information - agent asks for clarification without inventing details",
       "category": "Negative / Boundary",
       "priority": "High",
-      "functional_status": "FAIL",
-      "evaluation_status": "FAIL",
-      "final_status": "FAIL",
-      "failed_step": "Functional verification: Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements)",
-      "error": "AssertionError: Functional checks failed:\n  - Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements) | expected: '<= 1' | actual: '2'\nassert not [{'check': \"Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements)\", 'passed': False, 'expected': '<= 1', 'actual': 2}]",
+      "functional_status": "PASS",
+      "evaluation_status": "PASS",
+      "final_status": "PASS",
+      "failed_step": null,
+      "error": null,
       "failed_ui_steps": [],
-      "failed_checks": [
-        {
-          "check": "Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements)",
-          "passed": false,
-          "expected": "<= 1",
-          "actual": 2
-        }
-      ],
+      "failed_checks": [],
       "checks_total": 24,
       "conversation": [
         {
@@ -162,7 +189,22 @@
           "passed": true,
           "reason": "The score is 1.00 because the user's request is directly addressed in the output, and the output is relevant to the user's request.",
           "error": null,
-          "duration_s": 19.6
+          "duration_s": 10.6,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "borderline",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 4,
@@ -173,26 +215,52 @@
           "passed": true,
           "reason": "The faithfulness score is 1.00 because the actual output perfectly aligns with the retrieval context.",
           "error": null,
-          "duration_s": 37.9
+          "duration_s": 36.9,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 4,
           "metric": "hallucination",
-          "score": 0.6667,
+          "score": 0.0,
           "threshold": 0.3,
           "comparison": "<=",
-          "passed": false,
-          "reason": "The actual output exhibits a hallucination score of 0.67 because it partially aligns with the user's request, but fails to fully incorporate it. The output only adds the new job details, but not the user's request to include it in the experience section.",
+          "passed": true,
+          "reason": "The hallucination score is 1.00 because the actual output perfectly aligns with the provided factual alignments, indicating a complete and accurate match.",
           "error": null,
-          "duration_s": 21.3
+          "duration_s": 8.1,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": "The actual output accurately reflects the user's requested changes to the resume."
+            }
+          ]
         }
       ],
       "evaluation_notes": "Only the final agent turn is judged (hardware budget on an 8 GB machine); turn 1 is covered by functional checks.",
       "screenshots": [
-        "screenshots/TC_002_FAIL_20261112223553.png"
+        "screenshots/TC_002_PASS_20261112230347.png"
       ],
       "transcript": "transcripts/TC_002.json",
-      "executed_at": "2026-11-12T22:35:53+00:00"
+      "executed_at": "2026-11-12T23:03:48+00:00"
     },
     {
       "test_id": "TC_003",
@@ -223,32 +291,50 @@
         {
           "turn": 2,
           "metric": "faithfulness",
-          "score": 0.6667,
+          "score": 0.5,
           "threshold": 0.7,
           "comparison": ">=",
           "passed": false,
-          "reason": "The faithfulness score is 0.67 because the actual output demonstrates a good understanding of the retrieval context, but there are minor inconsistencies in the details.",
+          "reason": "The faithfulness score is 0.50 because the actual output demonstrates a moderate degree of alignment with the retrieval context, but some discrepancies exist.",
           "error": null,
-          "duration_s": 33.3
+          "duration_s": 24.8,
+          "raw_deepeval_score": 0.5,
+          "verdicts": [
+            {
+              "verdict": "no",
+              "reason": null
+            },
+            {
+              "verdict": "borderline",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 2,
           "metric": "hallucination",
-          "score": 0.0,
+          "score": 1.0,
           "threshold": 0.3,
           "comparison": "<=",
-          "passed": true,
-          "reason": "The actual output hallucinated by providing a response to a user request for resume updates, not a flight booking service. The user's request was for a flight booking service, which the output did not provide.",
+          "passed": false,
+          "reason": "The hallucination score is 0.00 because the actual output is a resume editing suggestion, contradicting the user's request for a flight booking. The context clearly states the user's request, and the actual output does not align with it.",
           "error": null,
-          "duration_s": 16.0
+          "duration_s": 9.6,
+          "raw_deepeval_score": 0.0,
+          "verdicts": [
+            {
+              "verdict": "no",
+              "reason": "The actual output contradicts the context which states that the user requested a flight booking. The assistant's response is focused on resume editing."
+            }
+          ]
         }
       ],
       "evaluation_notes": "Answer Relevancy is intentionally not applied: a correct refusal does not answer the off-topic question, so the metric would penalise the desired behaviour.",
       "screenshots": [
-        "screenshots/TC_003_PASS_20261112223559.png"
+        "screenshots/TC_003_PASS_20261112230352.png"
       ],
       "transcript": "transcripts/TC_003.json",
-      "executed_at": "2026-11-12T22:35:59+00:00"
+      "executed_at": "2026-11-12T23:03:52+00:00"
     },
     {
       "test_id": "TC_004",
@@ -256,8 +342,8 @@
       "category": "Positive",
       "priority": "High",
       "functional_status": "PASS",
-      "evaluation_status": "FAIL",
-      "final_status": "FAIL",
+      "evaluation_status": "PASS",
+      "final_status": "PASS",
       "failed_step": null,
       "error": null,
       "failed_ui_steps": [],
@@ -285,7 +371,26 @@
           "passed": true,
           "reason": "The score is 1.00 because the summary was updated as requested, and the input was clear and concise.",
           "error": null,
-          "duration_s": 15.7
+          "duration_s": 22.1,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 2,
@@ -296,26 +401,48 @@
           "passed": true,
           "reason": "The faithfulness score is 1.00 because the actual output perfectly aligns with the retrieval context.",
           "error": null,
-          "duration_s": 25.4
+          "duration_s": 30.6,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "borderline",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 2,
           "metric": "hallucination",
-          "score": 0.5,
+          "score": 0.0,
           "threshold": 0.3,
           "comparison": "<=",
-          "passed": false,
-          "reason": "The hallucination score is 0.50 because the actual output partially aligns with the user's request by updating the summary, but contradicts the request by adding Docker and Jenkins to the skills section, which was not explicitly requested.",
+          "passed": true,
+          "reason": "The hallucination score is 1.00 because the actual output perfectly aligns with the provided context, confirming the user's requested changes were applied to the resume.",
           "error": null,
-          "duration_s": 18.7
+          "duration_s": 10.0,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": "The actual output agrees with the provided context which states that the user's requested changes were applied to the resume."
+            }
+          ]
         }
       ],
       "evaluation_notes": null,
       "screenshots": [
-        "screenshots/TC_004_PASS_20261112223613.png"
+        "screenshots/TC_004_PASS_20261112230402.png"
       ],
       "transcript": "transcripts/TC_004.json",
-      "executed_at": "2026-11-12T22:36:13+00:00"
+      "executed_at": "2026-11-12T23:04:02+00:00"
     },
     {
       "test_id": "TC_005",
@@ -323,8 +450,8 @@
       "category": "Boundary / Negative",
       "priority": "Medium",
       "functional_status": "PASS",
-      "evaluation_status": "PASS",
-      "final_status": "PASS",
+      "evaluation_status": "FAIL",
+      "final_status": "FAIL",
       "failed_step": null,
       "error": null,
       "failed_ui_steps": [],
@@ -352,7 +479,22 @@
           "passed": true,
           "reason": "The score is 1.00 because the prompt is clear and concise, and the output successfully modifies the experience to 3 and 10 years.",
           "error": null,
-          "duration_s": 12.5
+          "duration_s": 13.1,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "borderline",
+              "reason": null
+            },
+            {
+              "verdict": "borderline",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 2,
@@ -363,26 +505,44 @@
           "passed": true,
           "reason": "The faithfulness score is 1.00 because the actual output perfectly aligns with the retrieval context.",
           "error": null,
-          "duration_s": 25.7
+          "duration_s": 34.8,
+          "raw_deepeval_score": 1.0,
+          "verdicts": [
+            {
+              "verdict": "yes",
+              "reason": null
+            },
+            {
+              "verdict": "borderline",
+              "reason": null
+            }
+          ]
         },
         {
           "turn": 2,
           "metric": "hallucination",
-          "score": 0.0,
+          "score": 1.0,
           "threshold": 0.3,
           "comparison": "<=",
-          "passed": true,
-          "reason": "The actual output fails to address the user's request for a change in total experience. The provided contexts highlight a discrepancy between the user's expectation and the output's response.",
+          "passed": false,
+          "reason": "The hallucination score is 0.00 because the user's request is contradictory. The user asked for 3 years and 10 years, which is a contradiction.",
           "error": null,
-          "duration_s": 11.9
+          "duration_s": 13.0,
+          "raw_deepeval_score": 0.0,
+          "verdicts": [
+            {
+              "verdict": "no",
+              "reason": "The user's request is contradictory. The user asked for 3 years and 10 years."
+            }
+          ]
         }
       ],
       "evaluation_notes": null,
       "screenshots": [
-        "screenshots/TC_005_PASS_20261112223617.png"
+        "screenshots/TC_005_PASS_20261112230408.png"
       ],
       "transcript": "transcripts/TC_005.json",
-      "executed_at": "2026-11-12T22:36:17+00:00"
+      "executed_at": "2026-11-12T23:04:08+00:00"
     }
   ]
 }

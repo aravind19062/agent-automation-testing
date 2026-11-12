@@ -35,7 +35,7 @@ def pytest_runtest_makereport(item, call):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    if session.config.getoption("--no-report", default=False):
+    if session.config.getoption("--no-report", default=False) or session.config.option.collectonly:
         return
     try:
         from reporting.report_generator import generate_reports
@@ -48,6 +48,8 @@ def pytest_sessionfinish(session, exitstatus):
 def pytest_collection_modifyitems(session, config, items):
     """A run that re-executes UI scenarios starts from a clean slate, so reports
     can never mix results from different runs."""
+    if config.option.collectonly:  # listing tests must never touch existing evidence
+        return
     settings = get_settings()
     rerun_ids = {m.args[0] for item in items for m in item.iter_markers("test_id")}
     if not rerun_ids:

@@ -17,7 +17,7 @@
     "name": "Resume Updating Agent",
     "url": "http://127.0.0.1:8765"
   },
-  "started_at": "2026-11-12T22:36:13+00:00",
+  "started_at": "2026-11-12T23:04:03+00:00",
   "resume_before": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
   "conversation": [
     {
@@ -25,7 +25,7 @@
       "role": "user",
       "content": "Change my total experience to 3 years and also make it 10 years.",
       "input_source": "test_data",
-      "timestamp": "2026-11-12T22:36:13+00:00"
+      "timestamp": "2026-11-12T23:04:04+00:00"
     },
     {
       "turn": 2,
@@ -36,7 +36,7 @@
       "resume_after": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
       "evaluate": true,
       "expected_output": "The agent does not change the resume, points out the conflict between 3 and 10 years, and asks which value to use.",
-      "timestamp": "2026-11-12T22:36:17+00:00"
+      "timestamp": "2026-11-12T23:04:08+00:00"
     }
   ],
   "ui_events": [
@@ -44,13 +44,13 @@
       "kind": "validation_message",
       "input": "",
       "observed": "Please enter an update request.",
-      "timestamp": "2026-11-12T22:36:13+00:00"
+      "timestamp": "2026-11-12T23:04:03+00:00"
     },
     {
       "kind": "validation_message",
       "input": "     ",
       "observed": "Please enter an update request.",
-      "timestamp": "2026-11-12T22:36:13+00:00"
+      "timestamp": "2026-11-12T23:04:04+00:00"
     }
   ],
   "steps": [
@@ -58,49 +58,49 @@
       "step": 1,
       "name": "Enter the base resume",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:13+00:00"
+      "started_at": "2026-11-12T23:04:03+00:00"
     },
     {
       "step": 2,
       "name": "Submit empty/whitespace request ''",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:13+00:00"
+      "started_at": "2026-11-12T23:04:03+00:00"
     },
     {
       "step": 3,
       "name": "Verify request '' is blocked",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:13+00:00"
+      "started_at": "2026-11-12T23:04:03+00:00"
     },
     {
       "step": 4,
       "name": "Submit empty/whitespace request '     '",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:13+00:00"
+      "started_at": "2026-11-12T23:04:04+00:00"
     },
     {
       "step": 5,
       "name": "Verify request '     ' is blocked",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:13+00:00"
+      "started_at": "2026-11-12T23:04:04+00:00"
     },
     {
       "step": 6,
       "name": "Send user request 1: Change my total experience to 3 years and also make it 10 ye",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:13+00:00"
+      "started_at": "2026-11-12T23:04:04+00:00"
     },
     {
       "step": 7,
       "name": "Verify agent response 1",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:17+00:00"
+      "started_at": "2026-11-12T23:04:08+00:00"
     },
     {
       "step": 8,
       "name": "Verify unrelated resume content was not changed",
       "status": "PASSED",
-      "started_at": "2026-11-12T22:36:17+00:00"
+      "started_at": "2026-11-12T23:04:08+00:00"
     }
   ],
   "functional_checks": [
@@ -221,12 +221,12 @@
   ],
   "evidence": {
     "screenshots": [
-      "screenshots/TC_005_PASS_20261112223617.png"
+      "screenshots/TC_005_PASS_20261112230408.png"
     ]
   },
   "execution_status": "PASS",
   "failed_step": null,
   "error": null,
-  "finished_at": "2026-11-12T22:36:17+00:00",
-  "timestamp": "2026-11-12T22:36:17+00:00"
+  "finished_at": "2026-11-12T23:04:08+00:00",
+  "timestamp": "2026-11-12T23:04:08+00:00"
 }

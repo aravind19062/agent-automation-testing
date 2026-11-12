@@ -1,0 +1,502 @@
+{
+  "TC_001": {
+    "status": "FAIL",
+    "judge": {
+      "provider": "ollama",
+      "model": "qwen2.5:3b",
+      "base_url": "http://localhost:11434",
+      "temperature": 0,
+      "judge_class": "OllamaModel"
+    },
+    "agent_model": {
+      "name": "gemma2:2b",
+      "version": "2b",
+      "provider": "ollama",
+      "ollama_server_version": "0.40.16",
+      "parameter_size": "2.6B",
+      "quantization": "Q4_0",
+      "family": "gemma2",
+      "format": "gguf",
+      "digest": "8ccf136fdd52"
+    },
+    "metrics_applied": [
+      "answer_relevancy",
+      "faithfulness",
+      "hallucination"
+    ],
+    "evaluation_notes": null,
+    "transcript_timestamp": "2026-11-12T23:03:35+00:00",
+    "evaluated_at": "2026-11-12T23:15:29+00:00",
+    "turns": [
+      {
+        "turn": 2,
+        "input": "Add Python and Playwright to my skills.",
+        "actual_output": "Added Python and Playwright to your Skills section.\n\n[SKILLS]\nSelenium, Java, TestNG, Postman, SQL, Jira, Python, Playwright",
+        "expected_output": "The agent confirms it added Python and Playwright to the Skills section, and the updated Skills section lists the existing skills plus Python and Playwright.",
+        "context": [
+          "The assistant is a resume-editing agent. It may only use facts from the original resume below and from the user's messages. Its job is to apply the user's requested changes to the resume, so content the user asked to add or change is expected and supported. It asks a question when details are missing or the request is contradictory, and it declines requests that are not about editing this resume.\n\nOriginal resume:\nJordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n\nThe user's messages (requested changes):\n- Add Python and Playwright to my skills."
+        ],
+        "metrics": [
+          {
+            "metric": "answer_relevancy",
+            "score": 1.0,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": true,
+            "reason": "The score is 1.00 because there are no irrelevant statements in the actual output that address the input.",
+            "error": null,
+            "duration_s": 14.5,
+            "raw_deepeval_score": 1.0,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "yes",
+                "reason": "The statements indicate that Python and Playwright have been added to the user's skills section."
+              }
+            ]
+          },
+          {
+            "metric": "faithfulness",
+            "score": 0.6667,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": false,
+            "reason": "The score is 0.67 because the actual output mentions Jordan Avery's skills as having both Python and Playwright added simultaneously, which contradicts the provided information that only Python and Playwright were added, not both at the same time.",
+            "error": null,
+            "duration_s": 16.1,
+            "raw_deepeval_score": 0.6667,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "no",
+                "reason": "Jordan Avery's skills are only mentioned as having Python and Playwright added, not both simultaneously."
+              }
+            ]
+          },
+          {
+            "metric": "hallucination",
+            "score": 0.0,
+            "threshold": 0.3,
+            "comparison": "<=",
+            "passed": true,
+            "reason": "The score is 1.00 because the actual output adds Python and Playwright to the list of skills, which perfectly aligns with the user's requested changes and provides no contradictions.",
+            "error": null,
+            "duration_s": 10.1,
+            "raw_deepeval_score": 1.0,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": "The actual output adds Python and Playwright to the list of skills, which aligns with the user's requested changes."
+              }
+            ]
+          }
+        ],
+        "passed": false
+      }
+    ]
+  },
+  "TC_002": {
+    "status": "FAIL",
+    "judge": {
+      "provider": "ollama",
+      "model": "qwen2.5:3b",
+      "base_url": "http://localhost:11434",
+      "temperature": 0,
+      "judge_class": "OllamaModel"
+    },
+    "agent_model": {
+      "name": "gemma2:2b",
+      "version": "2b",
+      "provider": "ollama",
+      "ollama_server_version": "0.40.16",
+      "parameter_size": "2.6B",
+      "quantization": "Q4_0",
+      "family": "gemma2",
+      "format": "gguf",
+      "digest": "8ccf136fdd52"
+    },
+    "metrics_applied": [
+      "answer_relevancy",
+      "faithfulness",
+      "hallucination"
+    ],
+    "evaluation_notes": "Only the final agent turn is judged (hardware budget on an 8 GB machine); turn 1 is covered by functional checks.",
+    "transcript_timestamp": "2026-11-12T23:03:48+00:00",
+    "evaluated_at": "2026-11-12T23:16:26+00:00",
+    "turns": [
+      {
+        "turn": 4,
+        "input": "Earlier messages from the user:\n- Add my new job to my experience section.\n\nLatest request: It is Senior SDET at Fabrikam Inc, started March 2025. I lead the Playwright automation team.",
+        "actual_output": "Added your new job as Senior SDET at Fabrikam Inc. to Experience.\n\n[EXPERIENCE]\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nSenior SDET, Fabrikam Inc. (March 2025 - Present)\n- Lead the Playwright automation team.",
+        "expected_output": "The agent adds a Senior SDET role at Fabrikam Inc starting March 2025, mentioning leading the Playwright automation team, and keeps the existing Northwind Labs and Contoso Retail roles.",
+        "context": [
+          "The assistant is a resume-editing agent. It may only use facts from the original resume below and from the user's messages. Its job is to apply the user's requested changes to the resume, so content the user asked to add or change is expected and supported. It asks a question when details are missing or the request is contradictory, and it declines requests that are not about editing this resume.\n\nOriginal resume:\nJordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n\nThe user's messages (requested changes):\n- Add my new job to my experience section.\n- It is Senior SDET at Fabrikam Inc, started March 2025. I lead the Playwright automation team."
+        ],
+        "metrics": [
+          {
+            "metric": "answer_relevancy",
+            "score": 0.25,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": false,
+            "reason": "The score is 0.25 because the statements are about different job roles (QA Engineer, QA Analyst, and Playwright automation) at other companies (Northwind Labs and Contoso Retail) and do not address the specific request about the Senior SDET role at Fabrikam Inc.",
+            "error": null,
+            "duration_s": 23.9,
+            "raw_deepeval_score": 0.25,
+            "verdicts": [
+              {
+                "verdict": "no",
+                "reason": "The statement is about adding a new job but does not address the latest request about the Senior SDET role at Fabrikam Inc."
+              },
+              {
+                "verdict": "no",
+                "reason": "The statement is about the QA Engineer experience at Northwind Labs and does not address the latest request about the Senior SDET role at Fabrikam Inc."
+              },
+              {
+                "verdict": "no",
+                "reason": "The statement is about the QA Analyst experience at Contoso Retail and does not address the latest request about the Senior SDET role at Fabrikam Inc."
+              },
+              {
+                "verdict": "yes",
+                "reason": null
+              }
+            ]
+          },
+          {
+            "metric": "faithfulness",
+            "score": 1.0,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": true,
+            "reason": "The score is 1.00 because there are no contradictions with the retrieval context, indicating that the `actual output` accurately reflects the information provided in the `retrieval context`.",
+            "error": null,
+            "duration_s": 22.2,
+            "raw_deepeval_score": 1.0,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "yes",
+                "reason": null
+              }
+            ]
+          },
+          {
+            "metric": "hallucination",
+            "score": 1.0,
+            "threshold": 0.3,
+            "comparison": "<=",
+            "passed": false,
+            "reason": "The score is 0.00 because the actual output introduces a new job title 'Senior SDET' at Fabrikam Inc., which is not mentioned in the original context and introduces additional information not aligned with the provided context.",
+            "error": null,
+            "duration_s": 10.9,
+            "raw_deepeval_score": 0.0,
+            "verdicts": [
+              {
+                "verdict": "no",
+                "reason": "The actual output introduces a new job title 'Senior SDET' at Fabrikam Inc. which is not mentioned in the original context. The original context only mentions a job as 'Senior SDET' at Fabrikam Inc., but does not specify the start date or the duration of the job."
+              }
+            ]
+          }
+        ],
+        "passed": false
+      }
+    ]
+  },
+  "TC_003": {
+    "status": "FAIL",
+    "judge": {
+      "provider": "ollama",
+      "model": "qwen2.5:3b",
+      "base_url": "http://localhost:11434",
+      "temperature": 0,
+      "judge_class": "OllamaModel"
+    },
+    "agent_model": {
+      "name": "gemma2:2b",
+      "version": "2b",
+      "provider": "ollama",
+      "ollama_server_version": "0.40.16",
+      "parameter_size": "2.6B",
+      "quantization": "Q4_0",
+      "family": "gemma2",
+      "format": "gguf",
+      "digest": "8ccf136fdd52"
+    },
+    "metrics_applied": [
+      "faithfulness",
+      "hallucination"
+    ],
+    "evaluation_notes": "Answer Relevancy is intentionally not applied: a correct refusal does not answer the off-topic question, so the metric would penalise the desired behaviour.",
+    "transcript_timestamp": "2026-11-12T23:03:52+00:00",
+    "evaluated_at": "2026-11-12T23:16:54+00:00",
+    "turns": [
+      {
+        "turn": 2,
+        "input": "Can you book me a flight to Paris next week?",
+        "actual_output": "I can only help you update your resume. What would you like to change?",
+        "expected_output": "The agent politely declines because it can only help update the resume, and makes no changes.",
+        "context": [
+          "The assistant is a resume-editing agent. It may only use facts from the original resume below and from the user's messages. Its job is to apply the user's requested changes to the resume, so content the user asked to add or change is expected and supported. It asks a question when details are missing or the request is contradictory, and it declines requests that are not about editing this resume.\n\nOriginal resume:\nJordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n\nThe user's messages (requested changes):\n- Can you book me a flight to Paris next week?"
+        ],
+        "metrics": [
+          {
+            "metric": "faithfulness",
+            "score": 1.0,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": true,
+            "reason": "The score is 1.00 because there are no contradictions with the retrieval context, indicating that the `actual output` accurately reflects the information provided in the `retrieval context`.",
+            "error": null,
+            "duration_s": 18.2,
+            "raw_deepeval_score": 1.0,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": null
+              }
+            ]
+          },
+          {
+            "metric": "hallucination",
+            "score": 1.0,
+            "threshold": 0.3,
+            "comparison": "<=",
+            "passed": false,
+            "reason": "The actual output contradicts the provided context by suggesting a flight booking instead of editing a resume, which is inconsistent with the role of a resume-editing agent.",
+            "error": null,
+            "duration_s": 9.1,
+            "raw_deepeval_score": 0.0,
+            "verdicts": [
+              {
+                "verdict": "no",
+                "reason": "The actual output does not agree with the provided context. The context indicates that the assistant is a resume-editing agent and should apply the user's requested changes to the resume. The actual output suggests booking a flight instead of editing the resume."
+              }
+            ]
+          }
+        ],
+        "passed": false
+      }
+    ]
+  },
+  "TC_004": {
+    "status": "FAIL",
+    "judge": {
+      "provider": "ollama",
+      "model": "qwen2.5:3b",
+      "base_url": "http://localhost:11434",
+      "temperature": 0,
+      "judge_class": "OllamaModel"
+    },
+    "agent_model": {
+      "name": "gemma2:2b",
+      "version": "2b",
+      "provider": "ollama",
+      "ollama_server_version": "0.40.16",
+      "parameter_size": "2.6B",
+      "quantization": "Q4_0",
+      "family": "gemma2",
+      "format": "gguf",
+      "digest": "8ccf136fdd52"
+    },
+    "metrics_applied": [
+      "answer_relevancy",
+      "faithfulness",
+      "hallucination"
+    ],
+    "evaluation_notes": null,
+    "transcript_timestamp": "2026-11-12T23:04:02+00:00",
+    "evaluated_at": "2026-11-12T23:17:46+00:00",
+    "turns": [
+      {
+        "turn": 2,
+        "input": "Update my summary to say I have 5 years of experience, and add Docker and Jenkins to my skills.",
+        "actual_output": "Updated your Summary and Skills sections.\n\n[SUMMARY]\nQA engineer with 5 years of experience testing web applications and REST APIs. Expertise in Selenium, Java, TestNG, Postman, SQL, Jira, and Docker, and Jenkins.\n\n[SKILLS]\nSelenium, Java, TestNG, Postman, SQL, Jira, Docker, Jenkins",
+        "expected_output": "The Summary states 5 years of experience, the Skills section additionally lists Docker and Jenkins, and Experience, Education and contact details are unchanged.",
+        "context": [
+          "The assistant is a resume-editing agent. It may only use facts from the original resume below and from the user's messages. Its job is to apply the user's requested changes to the resume, so content the user asked to add or change is expected and supported. It asks a question when details are missing or the request is contradictory, and it declines requests that are not about editing this resume.\n\nOriginal resume:\nJordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n\nThe user's messages (requested changes):\n- Update my summary to say I have 5 years of experience, and add Docker and Jenkins to my skills."
+        ],
+        "metrics": [
+          {
+            "metric": "answer_relevancy",
+            "score": 0.5,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": false,
+            "reason": "The score is 0.50 because the response includes a statement about AI's expertise, which is irrelevant to updating a summary about work experience and skills, despite also mentioning Docker and Jenkins. The statement about expertise does not contribute to the summary update as requested.",
+            "error": null,
+            "duration_s": 18.1,
+            "raw_deepeval_score": 0.5,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "no",
+                "reason": "The statement is about the AI's expertise and skills, not about updating a summary."
+              }
+            ]
+          },
+          {
+            "metric": "faithfulness",
+            "score": 1.0,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": true,
+            "reason": "The score is 1.00 because there are no contradictions with the retrieval context, indicating that the `actual output` accurately reflects the information provided in the `retrieval context`.",
+            "error": null,
+            "duration_s": 17.5,
+            "raw_deepeval_score": 1.0,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "yes",
+                "reason": null
+              }
+            ]
+          },
+          {
+            "metric": "hallucination",
+            "score": 1.0,
+            "threshold": 0.3,
+            "comparison": "<=",
+            "passed": false,
+            "reason": "The actual output does not provide the requested update to the summary (5 years of experience) and does not mention Jenkins, which were requested to be added to the skills section. This results in a hallucination score of 0.00 as the output fails to meet the specified requirements.",
+            "error": null,
+            "duration_s": 16.1,
+            "raw_deepeval_score": 0.0,
+            "verdicts": [
+              {
+                "verdict": "no",
+                "reason": "The actual output does not provide the requested update to the summary (5 years of experience) and does not mention Jenkins, which was requested to be added to the skills section."
+              }
+            ]
+          }
+        ],
+        "passed": false
+      }
+    ]
+  },
+  "TC_005": {
+    "status": "FAIL",
+    "judge": {
+      "provider": "ollama",
+      "model": "qwen2.5:3b",
+      "base_url": "http://localhost:11434",
+      "temperature": 0,
+      "judge_class": "OllamaModel"
+    },
+    "agent_model": {
+      "name": "gemma2:2b",
+      "version": "2b",
+      "provider": "ollama",
+      "ollama_server_version": "0.40.16",
+      "parameter_size": "2.6B",
+      "quantization": "Q4_0",
+      "family": "gemma2",
+      "format": "gguf",
+      "digest": "8ccf136fdd52"
+    },
+    "metrics_applied": [
+      "answer_relevancy",
+      "faithfulness",
+      "hallucination"
+    ],
+    "evaluation_notes": null,
+    "transcript_timestamp": "2026-11-12T23:04:08+00:00",
+    "evaluated_at": "2026-11-12T23:18:32+00:00",
+    "turns": [
+      {
+        "turn": 2,
+        "input": "Change my total experience to 3 years and also make it 10 years.",
+        "actual_output": "You asked for both 3 and 10 years. Which one should I use?",
+        "expected_output": "The agent does not change the resume, points out the conflict between 3 and 10 years, and asks which value to use.",
+        "context": [
+          "The assistant is a resume-editing agent. It may only use facts from the original resume below and from the user's messages. Its job is to apply the user's requested changes to the resume, so content the user asked to add or change is expected and supported. It asks a question when details are missing or the request is contradictory, and it declines requests that are not about editing this resume.\n\nOriginal resume:\nJordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n\nThe user's messages (requested changes):\n- Change my total experience to 3 years and also make it 10 years."
+        ],
+        "metrics": [
+          {
+            "metric": "answer_relevancy",
+            "score": 0.5,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": false,
+            "reason": "The score is 0.50 because the response does not address changing the experience to 3 or 10 years as requested, focusing instead on a direct response unrelated to the input.",
+            "error": null,
+            "duration_s": 15.4,
+            "raw_deepeval_score": 0.5,
+            "verdicts": [
+              {
+                "verdict": "yes",
+                "reason": null
+              },
+              {
+                "verdict": "no",
+                "reason": "The statement is a direct response to the input and does not provide additional information relevant to changing the experience to 3 or 10 years."
+              }
+            ]
+          },
+          {
+            "metric": "faithfulness",
+            "score": 0.0,
+            "threshold": 0.7,
+            "comparison": ">=",
+            "passed": false,
+            "reason": "The score is 0.00 because there are no contradictions, indicating the `actual output` aligns perfectly with the `retrieval context`.",
+            "error": null,
+            "duration_s": 14.4,
+            "raw_deepeval_score": 0.0,
+            "verdicts": [
+              {
+                "verdict": "no",
+                "reason": null
+              }
+            ]
+          },
+          {
+            "metric": "hallucination",
+            "score": 1.0,
+            "threshold": 0.3,
+            "comparison": "<=",
+            "passed": false,
+            "reason": "The score is 0.00 because the actual output introduces new requests (3 and 10 years) that contradict the original context and user's requests, which should have been adhered to without introducing new elements.",
+            "error": null,
+            "duration_s": 16.9,
+            "raw_deepeval_score": 0.0,
+            "verdicts": [
+              {
+                "verdict": "no",
+                "reason": "The actual output indicates that the user requested both 3 and 10 years of experience, which is contradictory to the context where the assistant is asked to use the original experience duration of 4 years and apply the user's requested changes. The assistant should not introduce new requests but should adhere to the original context and user's requests."
+              }
+            ]
+          }
+        ],
+        "passed": false
+      }
+    ]
+  }
+}

@@ -81,6 +81,9 @@ def build_report(settings: Settings) -> dict:
     return {
         "report_generated_at": utc_now(),
         "pass_rule": "A scenario passes only when its functional checks AND its evaluation thresholds are satisfied.",
+        "hallucination_note": ("Hallucination is reported as the share of context the judge says the output contradicts "
+                               "(0 = none, pass if <= threshold). DeepEval 4.x scores the inverse (1 = no hallucination); "
+                               "that raw value is shown alongside, and the judge's reason text refers to it."),
         "environment": {
             "application_url": settings.app_base_url,
             "agent_model": agent_model,
@@ -106,6 +109,15 @@ def _badge(status: str) -> str:
     return f'<span class="badge" style="background:{_BADGE.get(status, "#667085")}">{html.escape(status)}</span>'
 
 
+def _score_text(m: dict) -> str:
+    """Hallucination is reported as a RATE (lower is better). DeepEval 4.x's own
+    score is the inverse, and the judge's reason text quotes that raw value."""
+    raw = m.get("raw_deepeval_score")
+    if m["metric"] == "hallucination" and raw is not None and m["score"] is not None:
+        return f"{m['score']} (DeepEval raw {raw})"
+    return str(m["score"])
+
+
 def render_html(report: dict) -> str:
     e, s = report["environment"], report["summary"]
     esc = lambda v: html.escape(str(v)) if v is not None else "—"  # noqa: E731
@@ -123,7 +135,7 @@ def render_html(report: dict) -> str:
         convo = "".join(f"<div class='msg {t['role']}'><b>{t['role']}{' · ' + t['action'] if t['action'] else ''}</b>"
                         f"<pre>{esc(t['content'])}</pre></div>" for t in r["conversation"])
         metrics = "".join(
-            f"<tr><td>{m['turn']}</td><td>{m['metric']}</td><td>{esc(m['score'])}</td><td>{m['comparison']} {m['threshold']}</td>"
+            f"<tr><td>{m['turn']}</td><td>{m['metric']}</td><td>{esc(_score_text(m))}</td><td>{m['comparison']} {m['threshold']}</td>"
             f"<td>{_badge('PASS' if m['passed'] else 'FAIL')}</td><td>{esc(m['reason'] or m['error'])}</td></tr>"
             for m in r["metrics"]) or "<tr><td colspan=6>No evaluation results</td></tr>"
         checks = "".join(f"<li><b>{esc(c['check'])}</b><br>expected: <code>{esc(c['expected'])}</code><br>"
@@ -168,7 +180,7 @@ def render_markdown(report: dict) -> str:
     s, e = report["summary"], report["environment"]
     lines = ["# Execution & Evaluation Summary", "",
              f"Generated: {report['report_generated_at']}  ", f"**Overall status: {s['overall_status']}**  ",
-             f"Pass rule: {report['pass_rule']}", "",
+             f"Pass rule: {report['pass_rule']}  ", f"Hallucination: {report['hallucination_note']}", "",
              f"Agent model: {(e.get('agent_model') or {}).get('name')} · Judge: {(e.get('judge') or {}).get('model')} (Ollama) · "
              f"Thresholds: {e['thresholds']}", "",
              f"| Total | Executed | Passed | Failed | Failed UI steps | Metrics passed |", "|---|---|---|---|---|---|",
@@ -183,7 +195,7 @@ def render_markdown(report: dict) -> str:
     for r in report["scenarios"]:
         for m in r["metrics"]:
             reason = (m["reason"] or m["error"] or "").replace("|", "/").replace("\n", " ")
-            lines.append(f"| {r['test_id']} | {m['turn']} | {m['metric']} | {m['score']} | {m['comparison']} {m['threshold']} | "
+            lines.append(f"| {r['test_id']} | {m['turn']} | {m['metric']} | {_score_text(m)} | {m['comparison']} {m['threshold']} | "
                          f"{'PASS' if m['passed'] else 'FAIL'} | {reason[:300]} |")
     lines += ["", "## Failed functional checks", ""]
     for r in report["scenarios"]:
