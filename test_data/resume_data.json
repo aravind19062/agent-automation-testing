@@ -1,0 +1,19 @@
+{
+  "_note": "Fictional candidate used as non-sensitive test data. Contact details use the reserved example.com domain.",
+  "base_resume": {
+    "id": "RES_BASE_001",
+    "text": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
+    "protected_facts": [
+      "Jordan Avery",
+      "jordan.avery@example.com",
+      "+1-555-0100",
+      "Northwind Labs",
+      "Contoso Retail",
+      "University of Texas"
+    ]
+  },
+  "invalid_files": {
+    "unsupported_type": {"filename": "resume.exe", "content": "MZ binary-like placeholder content"},
+    "empty_file": {"filename": "empty_resume.txt", "content": ""}
+  }
+}

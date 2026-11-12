@@ -1,0 +1,252 @@
+{
+  "_note": "Deterministic core regression data. Each scenario maps 1:1 to a manual test case in docs/manual_test_cases.md and to one pytest test in tests/test_resume_agent.py.",
+  "scenarios": [
+    {
+      "test_id": "TC_001",
+      "title": "Successful resume update - add skills",
+      "category": "Positive",
+      "priority": "High",
+      "resume_ref": "base_resume",
+      "turns": [
+        {
+          "user": "Add Python and Playwright to my skills.",
+          "expect": {
+            "action": "update",
+            "changed_sections_include": [
+              "SKILLS"
+            ],
+            "section_contains": {
+              "SKILLS": [
+                "Python",
+                "Playwright",
+                "Selenium",
+                "Jira"
+              ]
+            },
+            "reply_contains_any": [
+              "Python",
+              "Playwright",
+              "skill"
+            ]
+          },
+          "evaluate": true,
+          "expected_output": "The agent confirms it added Python and Playwright to the Skills section, and the updated Skills section lists the existing skills plus Python and Playwright."
+        }
+      ],
+      "preserve_sections": [
+        "HEADER",
+        "SUMMARY",
+        "EXPERIENCE",
+        "EDUCATION"
+      ],
+      "evaluation_metrics": [
+        "answer_relevancy",
+        "faithfulness",
+        "hallucination"
+      ]
+    },
+    {
+      "test_id": "TC_002",
+      "title": "Incomplete information - agent asks for clarification without inventing details",
+      "category": "Negative / Boundary",
+      "priority": "High",
+      "resume_ref": "base_resume",
+      "turns": [
+        {
+          "user": "Add my new job to my experience section.",
+          "expect": {
+            "action": "clarify",
+            "resume_unchanged": true,
+            "reply_contains_any": [
+              "company",
+              "title",
+              "detail",
+              "date"
+            ],
+            "reply_must_not_contain": [
+              "Fabrikam",
+              "Acme"
+            ]
+          },
+          "evaluate": false,
+          "expected_output": "The agent does not change the resume and asks the user for the missing job details (company, job title, dates)."
+        },
+        {
+          "user": "It is Senior SDET at Fabrikam Inc, started March 2025. I lead the Playwright automation team.",
+          "expect": {
+            "action": "update",
+            "changed_sections_include": [
+              "EXPERIENCE"
+            ],
+            "section_contains": {
+              "EXPERIENCE": [
+                "Senior SDET",
+                "Fabrikam",
+                "March 2025",
+                "Northwind Labs",
+                "Contoso Retail"
+              ]
+            },
+            "max_occurrences": {
+              "300+ test cases": 1,
+              "3 days to 1 day": 1
+            }
+          },
+          "evaluate": true,
+          "expected_output": "The agent adds a Senior SDET role at Fabrikam Inc starting March 2025, mentioning leading the Playwright automation team, and keeps the existing Northwind Labs and Contoso Retail roles."
+        }
+      ],
+      "clarification_facts": {
+        "job_title": "Senior SDET",
+        "company": "Fabrikam Inc",
+        "start_date": "March 2025",
+        "highlight": "I lead the Playwright automation team"
+      },
+      "preserve_sections": [
+        "HEADER",
+        "SUMMARY",
+        "SKILLS",
+        "EDUCATION"
+      ],
+      "evaluation_metrics": [
+        "answer_relevancy",
+        "faithfulness",
+        "hallucination"
+      ],
+      "evaluation_notes": "Only the final agent turn is judged (hardware budget on an 8 GB machine); turn 1 is covered by functional checks."
+    },
+    {
+      "test_id": "TC_003",
+      "title": "Invalid and unsupported input is handled gracefully",
+      "category": "Negative",
+      "priority": "High",
+      "resume_ref": "base_resume",
+      "uploads": [
+        {
+          "file_ref": "unsupported_type",
+          "expected_error": "Unsupported file type. Please upload a .txt or .md resume."
+        },
+        {
+          "file_ref": "empty_file",
+          "expected_error": "The uploaded file is empty."
+        }
+      ],
+      "turns": [
+        {
+          "user": "Can you book me a flight to Paris next week?",
+          "expect": {
+            "action": "reject",
+            "resume_unchanged": true,
+            "reply_contains_any": [
+              "resume"
+            ]
+          },
+          "evaluate": true,
+          "expected_output": "The agent politely declines because it can only help update the resume, and makes no changes."
+        }
+      ],
+      "preserve_sections": [
+        "HEADER",
+        "SUMMARY",
+        "SKILLS",
+        "EXPERIENCE",
+        "EDUCATION"
+      ],
+      "evaluation_metrics": [
+        "faithfulness",
+        "hallucination"
+      ],
+      "evaluation_notes": "Answer Relevancy is intentionally not applied: a correct refusal does not answer the off-topic question, so the metric would penalise the desired behaviour."
+    },
+    {
+      "test_id": "TC_004",
+      "title": "Multiple resume modifications in one request",
+      "category": "Positive",
+      "priority": "High",
+      "resume_ref": "base_resume",
+      "turns": [
+        {
+          "user": "Update my summary to say I have 5 years of experience, and add Docker and Jenkins to my skills.",
+          "expect": {
+            "action": "update",
+            "changed_sections_include": [
+              "SUMMARY",
+              "SKILLS"
+            ],
+            "section_contains": {
+              "SUMMARY": [
+                "5 years"
+              ],
+              "SKILLS": [
+                "Docker",
+                "Jenkins",
+                "Selenium"
+              ]
+            },
+            "section_must_not_contain": {
+              "SUMMARY": [
+                "4 years"
+              ]
+            }
+          },
+          "evaluate": true,
+          "expected_output": "The Summary states 5 years of experience, the Skills section additionally lists Docker and Jenkins, and Experience, Education and contact details are unchanged."
+        }
+      ],
+      "preserve_sections": [
+        "HEADER",
+        "EXPERIENCE",
+        "EDUCATION"
+      ],
+      "evaluation_metrics": [
+        "answer_relevancy",
+        "faithfulness",
+        "hallucination"
+      ]
+    },
+    {
+      "test_id": "TC_005",
+      "title": "Boundary - empty input and conflicting instructions",
+      "category": "Boundary / Negative",
+      "priority": "Medium",
+      "resume_ref": "base_resume",
+      "empty_inputs": [
+        {
+          "value": "",
+          "expected_validation": "Please enter an update request."
+        },
+        {
+          "value": "     ",
+          "expected_validation": "Please enter an update request."
+        }
+      ],
+      "turns": [
+        {
+          "user": "Change my total experience to 3 years and also make it 10 years.",
+          "expect": {
+            "action": "clarify",
+            "resume_unchanged": true,
+            "reply_contains_all": [
+              "3",
+              "10"
+            ]
+          },
+          "evaluate": true,
+          "expected_output": "The agent does not change the resume, points out the conflict between 3 and 10 years, and asks which value to use."
+        }
+      ],
+      "preserve_sections": [
+        "HEADER",
+        "SUMMARY",
+        "SKILLS",
+        "EXPERIENCE",
+        "EDUCATION"
+      ],
+      "evaluation_metrics": [
+        "answer_relevancy",
+        "faithfulness",
+        "hallucination"
+      ]
+    }
+  ]
+}

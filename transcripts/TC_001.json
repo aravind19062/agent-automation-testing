@@ -1,0 +1,191 @@
+{
+  "test_id": "TC_001",
+  "title": "Successful resume update - add skills",
+  "pytest_node": "tests/test_resume_agent.py::test_tc001_successful_resume_update",
+  "model": {
+    "name": "gemma2:2b",
+    "version": "2b",
+    "provider": "ollama",
+    "ollama_server_version": "0.40.16",
+    "parameter_size": "2.6B",
+    "quantization": "Q4_0",
+    "family": "gemma2",
+    "format": "gguf",
+    "digest": "8ccf136fdd52"
+  },
+  "application_under_test": {
+    "name": "Resume Updating Agent",
+    "url": "http://127.0.0.1:8765"
+  },
+  "started_at": "2026-11-12T22:35:26+00:00",
+  "resume_before": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
+  "conversation": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "Add Python and Playwright to my skills.",
+      "input_source": "test_data",
+      "timestamp": "2026-11-12T22:35:26+00:00"
+    },
+    {
+      "turn": 2,
+      "role": "assistant",
+      "content": "Added Python and Playwright to your Skills section.",
+      "agent_action": "update",
+      "changed_sections": [
+        "SKILLS"
+      ],
+      "resume_after": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira, Python, Playwright\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
+      "evaluate": true,
+      "expected_output": "The agent confirms it added Python and Playwright to the Skills section, and the updated Skills section lists the existing skills plus Python and Playwright.",
+      "timestamp": "2026-11-12T22:35:33+00:00"
+    }
+  ],
+  "ui_events": [],
+  "steps": [
+    {
+      "step": 1,
+      "name": "Enter the base resume",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:26+00:00"
+    },
+    {
+      "step": 2,
+      "name": "Send user request 1: Add Python and Playwright to my skills.",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:26+00:00"
+    },
+    {
+      "step": 3,
+      "name": "Verify agent response 1",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:33+00:00"
+    },
+    {
+      "step": 4,
+      "name": "Verify unrelated resume content was not changed",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:33+00:00"
+    }
+  ],
+  "functional_checks": [
+    {
+      "check": "Turn 1: agent action is 'update'",
+      "passed": true,
+      "expected": "update",
+      "actual": "update"
+    },
+    {
+      "check": "Turn 1: 'SKILLS' reported as changed",
+      "passed": true,
+      "expected": "SKILLS",
+      "actual": [
+        "SKILLS"
+      ]
+    },
+    {
+      "check": "Turn 1: SKILLS contains 'Python'",
+      "passed": true,
+      "expected": "Python",
+      "actual": "Selenium, Java, TestNG, Postman, SQL, Jira, Python, Playwright"
+    },
+    {
+      "check": "Turn 1: SKILLS contains 'Playwright'",
+      "passed": true,
+      "expected": "Playwright",
+      "actual": "Selenium, Java, TestNG, Postman, SQL, Jira, Python, Playwright"
+    },
+    {
+      "check": "Turn 1: SKILLS contains 'Selenium'",
+      "passed": true,
+      "expected": "Selenium",
+      "actual": "Selenium, Java, TestNG, Postman, SQL, Jira, Python, Playwright"
+    },
+    {
+      "check": "Turn 1: SKILLS contains 'Jira'",
+      "passed": true,
+      "expected": "Jira",
+      "actual": "Selenium, Java, TestNG, Postman, SQL, Jira, Python, Playwright"
+    },
+    {
+      "check": "Turn 1: reply mentions one of ['Python', 'Playwright', 'skill']",
+      "passed": true,
+      "expected": [
+        "Python",
+        "Playwright",
+        "skill"
+      ],
+      "actual": "Added Python and Playwright to your Skills section."
+    },
+    {
+      "check": "Unrelated section HEADER unchanged",
+      "passed": true,
+      "expected": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX",
+      "actual": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX"
+    },
+    {
+      "check": "Unrelated section SUMMARY unchanged",
+      "passed": true,
+      "expected": "QA engineer with 4 years of experience testing web applications and REST APIs.",
+      "actual": "QA engineer with 4 years of experience testing web applications and REST APIs."
+    },
+    {
+      "check": "Unrelated section EXPERIENCE unchanged",
+      "passed": true,
+      "expected": "QA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.",
+      "actual": "QA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow."
+    },
+    {
+      "check": "Unrelated section EDUCATION unchanged",
+      "passed": true,
+      "expected": "B.Sc. Computer Science, University of Texas, 2020",
+      "actual": "B.Sc. Computer Science, University of Texas, 2020"
+    },
+    {
+      "check": "Protected fact 'Jordan Avery' still present",
+      "passed": true,
+      "expected": "Jordan Avery",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'jordan.avery@example.com' still present",
+      "passed": true,
+      "expected": "jordan.avery@example.com",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact '+1-555-0100' still present",
+      "passed": true,
+      "expected": "+1-555-0100",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'Northwind Labs' still present",
+      "passed": true,
+      "expected": "Northwind Labs",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'Contoso Retail' still present",
+      "passed": true,
+      "expected": "Contoso Retail",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'University of Texas' still present",
+      "passed": true,
+      "expected": "University of Texas",
+      "actual": "present"
+    }
+  ],
+  "evidence": {
+    "screenshots": [
+      "screenshots/TC_001_PASS_20261112223533.png"
+    ]
+  },
+  "execution_status": "PASS",
+  "failed_step": null,
+  "error": null,
+  "finished_at": "2026-11-12T22:35:33+00:00",
+  "timestamp": "2026-11-12T22:35:33+00:00"
+}

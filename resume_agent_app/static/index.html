@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resume Updating Agent</title>
+<style>
+  :root { --bg:#f6f7f9; --panel:#fff; --ink:#1d2330; --muted:#667085; --line:#e3e6ec;
+          --accent:#2f6fed; --ok:#1a7f4b; --warn:#a15c00; --bad:#b42318; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 -apple-system, system-ui, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:16px 24px; border-bottom:1px solid var(--line); background:var(--panel); }
+  header h1 { margin:0; font-size:20px; }
+  header p { margin:2px 0 0; color:var(--muted); font-size:13px; }
+  main { display:grid; grid-template-columns: 1fr 1fr; gap:16px; padding:16px 24px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  section { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:10px; min-width:0; }
+  h2 { margin:0; font-size:15px; }
+  textarea { width:100%; font:13px/1.45 ui-monospace, Menlo, monospace; border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
+  #resume-input { min-height:320px; }
+  #chat-input { min-height:70px; font-family:inherit; font-size:14px; }
+  button { font:inherit; border:0; border-radius:8px; padding:8px 14px; background:var(--accent); color:#fff; cursor:pointer; }
+  button.secondary { background:#eef1f6; color:var(--ink); }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .error { color:var(--bad); font-size:13px; min-height:1em; }
+  .hint { color:var(--muted); font-size:12px; }
+  #chat-log { display:flex; flex-direction:column; gap:8px; min-height:200px; max-height:420px; overflow:auto; padding:4px; }
+  .message { padding:8px 12px; border-radius:10px; max-width:90%; white-space:pre-wrap; }
+  .message[data-role="user"] { align-self:flex-end; background:#e8efff; }
+  .message[data-role="assistant"] { align-self:flex-start; background:#f2f4f7; }
+  .badge { display:inline-block; font-size:11px; font-weight:600; padding:1px 8px; border-radius:99px; margin-bottom:4px; text-transform:uppercase; letter-spacing:.03em; }
+  .badge.update { background:#dcfae6; color:var(--ok); } .badge.clarify { background:#fef0c7; color:var(--warn); }
+  .badge.reject, .badge.error { background:#fee4e2; color:var(--bad); }
+  #typing-indicator { color:var(--muted); font-size:13px; }
+  #updated-resume { white-space:pre-wrap; font:13px/1.45 ui-monospace, Menlo, monospace; background:#fafbfc; border:1px solid var(--line); border-radius:8px; padding:10px; margin:0; max-height:360px; overflow:auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Resume Updating Agent</h1>
+  <p>Paste or upload your resume, then tell the agent what to change.</p>
+</header>
+<main>
+  <section aria-label="Resume">
+    <h2>1. Your resume</h2>
+    <textarea id="resume-input" data-testid="resume-input" placeholder="Paste your plain-text resume here. Use CAPITALISED headings such as SUMMARY, SKILLS, EXPERIENCE."></textarea>
+    <div class="row">
+      <label for="resume-upload" class="hint">Or upload a .txt / .md file:</label>
+      <input type="file" id="resume-upload" data-testid="resume-upload" accept=".txt,.md">
+    </div>
+    <div class="error" id="upload-error" data-testid="upload-error" role="alert"></div>
+    <h2>Updated resume</h2>
+    <div class="hint">Changed sections: <span id="changed-sections" data-testid="changed-sections">none yet</span></div>
+    <pre id="updated-resume" data-testid="updated-resume" aria-label="Updated resume"></pre>
+  </section>
+
+  <section aria-label="Conversation">
+    <h2>2. Ask the agent</h2>
+    <div id="chat-log" data-testid="chat-log" aria-live="polite"></div>
+    <div id="typing-indicator" data-testid="typing-indicator" hidden>Agent is working…</div>
+    <textarea id="chat-input" data-testid="chat-input" maxlength="2000" placeholder="e.g. Add Docker to my skills"></textarea>
+    <div class="row">
+      <button id="send-button" data-testid="send-button">Send</button>
+      <button id="reset-button" data-testid="reset-button" class="secondary">New conversation</button>
+      <span class="hint"><span id="char-count">0</span>/2000</span>
+    </div>
+    <div class="error" id="validation-message" data-testid="validation-message" role="alert"></div>
+  </section>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const chatHistory = [];
+let busy = false;
+
+function addMessage(role, text, action) {
+  const div = document.createElement("div");
+  div.className = "message";
+  div.dataset.role = role;
+  div.dataset.testid = "chat-message";
+  div.setAttribute("data-testid", "chat-message");
+  if (action) {
+    div.dataset.action = action;
+    const badge = document.createElement("span");
+    badge.className = "badge " + action;
+    badge.setAttribute("data-testid", "agent-status");
+    badge.textContent = {update: "Updated", clarify: "Needs details", reject: "Declined", error: "Error"}[action] || action;
+    div.appendChild(badge);
+    div.appendChild(document.createElement("br"));
+  }
+  const body = document.createElement("span");
+  body.className = "message-text";
+  body.setAttribute("data-testid", "message-text");
+  body.textContent = text;
+  div.appendChild(body);
+  $("chat-log").appendChild(div);
+  $("chat-log").scrollTop = $("chat-log").scrollHeight;
+}
+
+function setBusy(value) {
+  busy = value;
+  $("send-button").disabled = value;
+  $("typing-indicator").hidden = !value;
+}
+
+async function send() {
+  if (busy) return;
+  const message = $("chat-input").value.trim();
+  const resume = $("resume-input").value;
+  $("validation-message").textContent = "";
+  if (!resume.trim()) { $("validation-message").textContent = "Please add your resume before requesting changes."; return; }
+  if (!message) { $("validation-message").textContent = "Please enter an update request."; return; }
+  addMessage("user", message);
+  $("chat-input").value = ""; $("char-count").textContent = "0";
+  setBusy(true);
+  try {
+    const res = await fetch("/api/chat", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({resume, message, history: chatHistory})});
+    const data = await res.json();
+    if (!res.ok) {
+      addMessage("assistant", data.error || "Something went wrong.", "error");
+    } else {
+      chatHistory.push({role: "user", content: message}, {role: "assistant", content: data.reply});
+      addMessage("assistant", data.reply, data.action);
+      if (data.updated_resume) {
+        $("resume-input").value = data.updated_resume;
+        $("updated-resume").textContent = data.updated_resume;
+        $("changed-sections").textContent = data.changed_sections.join(", ");
+      }
+    }
+  } catch (err) {
+    addMessage("assistant", "Could not reach the agent. Check your connection and try again.", "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+$("send-button").addEventListener("click", send);
+$("chat-input").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
+$("chat-input").addEventListener("input", () => { $("char-count").textContent = $("chat-input").value.length; });
+$("reset-button").addEventListener("click", () => {
+  chatHistory.length = 0; $("chat-log").innerHTML = ""; $("validation-message").textContent = "";
+  $("updated-resume").textContent = ""; $("changed-sections").textContent = "none yet";
+});
+$("resume-upload").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  $("upload-error").textContent = "";
+  if (!file) return;
+  const form = new FormData(); form.append("file", file);
+  try {
+    const res = await fetch("/api/upload", {method: "POST", body: form});
+    const data = await res.json();
+    if (!res.ok) { $("upload-error").textContent = data.error; }
+    else { $("resume-input").value = data.resume; }
+  } catch (err) { $("upload-error").textContent = "Upload failed. Please try again."; }
+  e.target.value = "";
+});
+</script>
+</body>
+</html>

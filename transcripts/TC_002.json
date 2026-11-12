@@ -1,0 +1,264 @@
+{
+  "test_id": "TC_002",
+  "title": "Incomplete information - agent asks for clarification without inventing details",
+  "pytest_node": "tests/test_resume_agent.py::test_tc002_incomplete_information_clarification",
+  "model": {
+    "name": "gemma2:2b",
+    "version": "2b",
+    "provider": "ollama",
+    "ollama_server_version": "0.40.16",
+    "parameter_size": "2.6B",
+    "quantization": "Q4_0",
+    "family": "gemma2",
+    "format": "gguf",
+    "digest": "8ccf136fdd52"
+  },
+  "application_under_test": {
+    "name": "Resume Updating Agent",
+    "url": "http://127.0.0.1:8765"
+  },
+  "started_at": "2026-11-12T22:35:35+00:00",
+  "resume_before": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
+  "conversation": [
+    {
+      "turn": 1,
+      "role": "user",
+      "content": "Add my new job to my experience section.",
+      "input_source": "test_data",
+      "timestamp": "2026-11-12T22:35:36+00:00"
+    },
+    {
+      "turn": 2,
+      "role": "assistant",
+      "content": "I need a few more details before I can make that change. Please tell me exactly what to add - for example the company, job title and dates for a job, or the name and issuer for a certification.",
+      "agent_action": "clarify",
+      "changed_sections": [],
+      "resume_after": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
+      "evaluate": false,
+      "expected_output": "The agent does not change the resume and asks the user for the missing job details (company, job title, dates).",
+      "timestamp": "2026-11-12T22:35:45+00:00"
+    },
+    {
+      "turn": 3,
+      "role": "user",
+      "content": "It is Senior SDET at Fabrikam Inc, started March 2025. I lead the Playwright automation team.",
+      "input_source": "test_data",
+      "timestamp": "2026-11-12T22:35:45+00:00"
+    },
+    {
+      "turn": 4,
+      "role": "assistant",
+      "content": "Added your new job as Senior SDET at Fabrikam Inc. to Experience.",
+      "agent_action": "update",
+      "changed_sections": [
+        "EXPERIENCE"
+      ],
+      "resume_after": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX\n\nSUMMARY\nQA engineer with 4 years of experience testing web applications and REST APIs.\n\nSKILLS\nSelenium, Java, TestNG, Postman, SQL, Jira\n\nEXPERIENCE\nQA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nSenior SDET, Fabrikam Inc. (March 2025 - Present)\n- Lead the Playwright automation team.\n- Built and maintained Selenium regression suites covering 300+ test cases.\n\nEDUCATION\nB.Sc. Computer Science, University of Texas, 2020\n",
+      "evaluate": true,
+      "expected_output": "The agent adds a Senior SDET role at Fabrikam Inc starting March 2025, mentioning leading the Playwright automation team, and keeps the existing Northwind Labs and Contoso Retail roles.",
+      "timestamp": "2026-11-12T22:35:53+00:00"
+    }
+  ],
+  "ui_events": [],
+  "steps": [
+    {
+      "step": 1,
+      "name": "Enter the base resume",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:35+00:00"
+    },
+    {
+      "step": 2,
+      "name": "Send user request 1: Add my new job to my experience section.",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:36+00:00"
+    },
+    {
+      "step": 3,
+      "name": "Verify agent response 1",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:45+00:00"
+    },
+    {
+      "step": 4,
+      "name": "Send user request 2: It is Senior SDET at Fabrikam Inc, started March 2025. I lea",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:45+00:00"
+    },
+    {
+      "step": 5,
+      "name": "Verify agent response 2",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:53+00:00"
+    },
+    {
+      "step": 6,
+      "name": "Verify unrelated resume content was not changed",
+      "status": "PASSED",
+      "started_at": "2026-11-12T22:35:53+00:00"
+    }
+  ],
+  "functional_checks": [
+    {
+      "check": "Turn 1: agent action is 'clarify'",
+      "passed": true,
+      "expected": "clarify",
+      "actual": "clarify"
+    },
+    {
+      "check": "Turn 1: resume is unchanged",
+      "passed": true,
+      "expected": "identical to resume before the turn",
+      "actual": "unchanged"
+    },
+    {
+      "check": "Turn 1: reply mentions one of ['company', 'title', 'detail', 'date']",
+      "passed": true,
+      "expected": [
+        "company",
+        "title",
+        "detail",
+        "date"
+      ],
+      "actual": "I need a few more details before I can make that change. Please tell me exactly what to add - for example the company, job title and dates for a job, or the name and issuer for a certification."
+    },
+    {
+      "check": "Turn 1: reply does not invent 'Fabrikam'",
+      "passed": true,
+      "expected": "no 'Fabrikam'",
+      "actual": "I need a few more details before I can make that change. Please tell me exactly what to add - for example the company, job title and dates for a job, or the name and issuer for a certification."
+    },
+    {
+      "check": "Turn 1: reply does not invent 'Acme'",
+      "passed": true,
+      "expected": "no 'Acme'",
+      "actual": "I need a few more details before I can make that change. Please tell me exactly what to add - for example the company, job title and dates for a job, or the name and issuer for a certification."
+    },
+    {
+      "check": "Turn 2: agent action is 'update'",
+      "passed": true,
+      "expected": "update",
+      "actual": "update"
+    },
+    {
+      "check": "Turn 2: 'EXPERIENCE' reported as changed",
+      "passed": true,
+      "expected": "EXPERIENCE",
+      "actual": [
+        "EXPERIENCE"
+      ]
+    },
+    {
+      "check": "Turn 2: EXPERIENCE contains 'Senior SDET'",
+      "passed": true,
+      "expected": "Senior SDET",
+      "actual": "QA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nSenior SDET, Fabrikam Inc. (March 2025 - Present)\n- Lead the Playwright automation team.\n- Built and maintained Selenium regression suites covering 300+ test cases."
+    },
+    {
+      "check": "Turn 2: EXPERIENCE contains 'Fabrikam'",
+      "passed": true,
+      "expected": "Fabrikam",
+      "actual": "QA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nSenior SDET, Fabrikam Inc. (March 2025 - Present)\n- Lead the Playwright automation team.\n- Built and maintained Selenium regression suites covering 300+ test cases."
+    },
+    {
+      "check": "Turn 2: EXPERIENCE contains 'March 2025'",
+      "passed": true,
+      "expected": "March 2025",
+      "actual": "QA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nSenior SDET, Fabrikam Inc. (March 2025 - Present)\n- Lead the Playwright automation team.\n- Built and maintained Selenium regression suites covering 300+ test cases."
+    },
+    {
+      "check": "Turn 2: EXPERIENCE contains 'Northwind Labs'",
+      "passed": true,
+      "expected": "Northwind Labs",
+      "actual": "QA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nSenior SDET, Fabrikam Inc. (March 2025 - Present)\n- Lead the Playwright automation team.\n- Built and maintained Selenium regression suites covering 300+ test cases."
+    },
+    {
+      "check": "Turn 2: EXPERIENCE contains 'Contoso Retail'",
+      "passed": true,
+      "expected": "Contoso Retail",
+      "actual": "QA Engineer, Northwind Labs (Jan 2022 - Present)\n- Built Selenium regression suites covering 300+ test cases.\n- Reduced release regression time from 3 days to 1 day.\n\nJunior QA Analyst, Contoso Retail (Jun 2020 - Dec 2021)\n- Executed manual test plans for the e-commerce checkout flow.\n\nSenior SDET, Fabrikam Inc. (March 2025 - Present)\n- Lead the Playwright automation team.\n- Built and maintained Selenium regression suites covering 300+ test cases."
+    },
+    {
+      "check": "Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements)",
+      "passed": false,
+      "expected": "<= 1",
+      "actual": 2
+    },
+    {
+      "check": "Turn 2: '3 days to 1 day' appears at most 1x (no duplicated achievements)",
+      "passed": true,
+      "expected": "<= 1",
+      "actual": 1
+    },
+    {
+      "check": "Unrelated section HEADER unchanged",
+      "passed": true,
+      "expected": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX",
+      "actual": "Jordan Avery\njordan.avery@example.com | +1-555-0100 | Austin, TX"
+    },
+    {
+      "check": "Unrelated section SUMMARY unchanged",
+      "passed": true,
+      "expected": "QA engineer with 4 years of experience testing web applications and REST APIs.",
+      "actual": "QA engineer with 4 years of experience testing web applications and REST APIs."
+    },
+    {
+      "check": "Unrelated section SKILLS unchanged",
+      "passed": true,
+      "expected": "Selenium, Java, TestNG, Postman, SQL, Jira",
+      "actual": "Selenium, Java, TestNG, Postman, SQL, Jira"
+    },
+    {
+      "check": "Unrelated section EDUCATION unchanged",
+      "passed": true,
+      "expected": "B.Sc. Computer Science, University of Texas, 2020",
+      "actual": "B.Sc. Computer Science, University of Texas, 2020"
+    },
+    {
+      "check": "Protected fact 'Jordan Avery' still present",
+      "passed": true,
+      "expected": "Jordan Avery",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'jordan.avery@example.com' still present",
+      "passed": true,
+      "expected": "jordan.avery@example.com",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact '+1-555-0100' still present",
+      "passed": true,
+      "expected": "+1-555-0100",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'Northwind Labs' still present",
+      "passed": true,
+      "expected": "Northwind Labs",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'Contoso Retail' still present",
+      "passed": true,
+      "expected": "Contoso Retail",
+      "actual": "present"
+    },
+    {
+      "check": "Protected fact 'University of Texas' still present",
+      "passed": true,
+      "expected": "University of Texas",
+      "actual": "present"
+    }
+  ],
+  "evidence": {
+    "screenshots": [
+      "screenshots/TC_002_FAIL_20261112223553.png"
+    ]
+  },
+  "execution_status": "FAIL",
+  "failed_step": "Functional verification: Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements)",
+  "error": "AssertionError: Functional checks failed:\n  - Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements) | expected: '<= 1' | actual: '2'\nassert not [{'check': \"Turn 2: '300+ test cases' appears at most 1x (no duplicated achievements)\", 'passed': False, 'expected': '<= 1', 'actual': 2}]",
+  "finished_at": "2026-11-12T22:35:53+00:00",
+  "timestamp": "2026-11-12T22:35:53+00:00"
+}
